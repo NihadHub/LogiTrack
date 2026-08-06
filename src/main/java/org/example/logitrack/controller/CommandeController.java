@@ -7,6 +7,7 @@ import org.example.logitrack.service.CommandeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +19,14 @@ import java.util.Map;
 public class CommandeController {
     private final CommandeService commandeService;
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<Commande> createCommande(@RequestBody CreateCommandeRequest request) {
         Commande commande = commandeService.createCommande(request.getClientId());
         return new ResponseEntity<>(commande, HttpStatus.CREATED);
     }
 
     @PostMapping("/{orderId}/products")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<Commande> addProductToCommande(
             @PathVariable Long orderId,
             @RequestBody AddProductRequest request) {
@@ -32,16 +35,19 @@ public class CommandeController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','AGENT')")
     public ResponseEntity<List<Commande>> getAllCommandes() {
         return ResponseEntity.ok(commandeService.getAllCommandes());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','AGENT')")
     public ResponseEntity<Commande> getCommandeById(@PathVariable Long id) {
         return ResponseEntity.ok(commandeService.getCommandeById(id));
     }
 
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','AGENT')")
     public ResponseEntity<Commande> updateStatut(
             @PathVariable Long id,
             @RequestBody Map<String, String> body) {
@@ -51,11 +57,13 @@ public class CommandeController {
     }
 
     @GetMapping("/client/{clientId}")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','AGENT')")
     public ResponseEntity<List<Commande>> getCommandesByClientId(@PathVariable Long clientId) {
         return ResponseEntity.ok(commandeService.getCommandesByClientId(clientId));
     }
 
     @GetMapping("/count")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<Long> countCommandes() {
         return ResponseEntity.ok(commandeService.countAllCommandes());
     }
