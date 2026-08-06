@@ -5,6 +5,9 @@ import org.example.logitrack.entity.Commande;
 import org.example.logitrack.entity.Statut;
 import org.example.logitrack.service.CommandeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,8 +39,9 @@ public class CommandeController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','AGENT')")
-    public ResponseEntity<List<Commande>> getAllCommandes() {
-        return ResponseEntity.ok(commandeService.getAllCommandes());
+    public ResponseEntity<Page<Commande>> getAllCommandes(
+            @PageableDefault(size = 10, sort = "dateCommande") Pageable pageable) {
+        return ResponseEntity.ok(commandeService.getAllCommandes(pageable));
     }
 
     @GetMapping("/{id}")

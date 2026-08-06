@@ -3,6 +3,8 @@ import org.example.logitrack.dto.AddProductRequest;
 import org.example.logitrack.entity.*;
 import org.example.logitrack.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -54,15 +56,14 @@ public class CommandeService {
         return commandeRepository.save(commande);
     }
 
-    public List<Commande> getAllCommandes() {
-        return commandeRepository.findAll();
+    public Page<Commande> getAllCommandes(Pageable pageable) {
+        return commandeRepository.findAll(pageable);
     }
 
     public Commande getCommandeById(Long id) {
         return commandeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commande introuvable avec l'id : " + id));
     }
-
 
     @Transactional
     public Commande updateStatut(Long id, Statut nouveauStatut) {

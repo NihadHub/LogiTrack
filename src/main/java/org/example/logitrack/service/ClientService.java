@@ -2,8 +2,9 @@ package org.example.logitrack.service;
 import org.example.logitrack.entity.Client;
 import org.example.logitrack.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -13,8 +14,9 @@ public class ClientService {
     public Client addClient(Client client){
         return clientRepository.save(client);
     }
-    public List<Client> getAllClients(){
-        return clientRepository.findAll();
+
+    public Page<Client> getAllClients(Pageable pageable){
+        return clientRepository.findAll(pageable);
     }
 
     public Client getClientById(long id){

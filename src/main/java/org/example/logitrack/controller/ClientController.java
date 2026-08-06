@@ -2,6 +2,9 @@ package org.example.logitrack.controller;
 import org.example.logitrack.entity.Client;
 import org.example.logitrack.service.ClientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +27,10 @@ public class ClientController {
     }
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','AGENT')")
-
-    public ResponseEntity<List<Client>> getAllClients(){
-    return ResponseEntity.ok(clientService.getAllClients());
-}
-
+    public ResponseEntity<Page<Client>> getAllClients(
+            @PageableDefault(size = 10, sort = "nom") Pageable pageable) {
+        return ResponseEntity.ok(clientService.getAllClients(pageable));
+    }
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','AGENT')")
 
