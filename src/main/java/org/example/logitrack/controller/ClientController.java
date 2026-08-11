@@ -20,7 +20,6 @@ public class ClientController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
-
     public ResponseEntity<Client> addClient(@RequestBody Client client) {
         Client saved = clientService.addClient(client);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
