@@ -13,7 +13,7 @@ import java.util.List;
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id ;
+    private Long id ;
     @Column(nullable = false, length = 100)
     private String nom;
 
@@ -29,4 +29,7 @@ public class Client {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Commande> commandes = new ArrayList<>();
+
+    @Column(nullable = false)
+    private  int points=0;
 }

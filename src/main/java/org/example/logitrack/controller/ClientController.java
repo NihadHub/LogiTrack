@@ -37,6 +37,13 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getClientById(id));
     }
 
+    @PostMapping("/{id}/{points}")
+    @PreAuthorize("hasRole('AGENT')")
+    public  ResponseEntity <Client> ajouterPoints(@PathVariable Long id, @PathVariable int points){
+        Client client = clientService.ajouterPointFidilite(id,points);
+        return ResponseEntity.ok(client);
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
 
