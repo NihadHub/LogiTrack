@@ -1,0 +1,137 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "État de l'API",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "up{job=\"logitrack\"}", "legendFormat": "LogiTrack" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value" }
+    },
+    {
+      "type": "stat",
+      "title": "Requêtes / seconde",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count{application=\"logitrack\"}[1m]))" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "reqps" } }
+    },
+    {
+      "type": "stat",
+      "title": "Taux d'erreurs HTTP (5xx)",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count{application=\"logitrack\", status=~\"5..\"}[5m])) / sum(rate(http_server_requests_seconds_count{application=\"logitrack\"}[5m])) * 100" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 }, { "color": "red", "value": 5 } ] }
+        }
+      },
+      "options": { "colorMode": "background" }
+    },
+    {
+      "type": "stat",
+      "title": "Temps de réponse moyen",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_sum{application=\"logitrack\"}[5m])) / sum(rate(http_server_requests_seconds_count{application=\"logitrack\"}[5m]))" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Nombre de requêtes HTTP par statut",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "sum by (status) (rate(http_server_requests_seconds_count{application=\"logitrack\"}[1m]))", "legendFormat": "{{status}}" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Temps de réponse (p50 / p95 / p99)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_server_requests_seconds_bucket{application=\"logitrack\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{application=\"logitrack\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{application=\"logitrack\"}[5m])) by (le))", "legendFormat": "p99" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Utilisation mémoire JVM (Heap)",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "jvm_memory_used_bytes{application=\"logitrack\", area=\"heap\"}", "legendFormat": "{{id}}" },
+        { "expr": "jvm_memory_max_bytes{application=\"logitrack\", area=\"heap\"}", "legendFormat": "max {{id}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bytes" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Utilisation CPU",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "process_cpu_usage{application=\"logitrack\"} * 100", "legendFormat": "CPU process" },
+        { "expr": "system_cpu_usage{application=\"logitrack\"} * 100", "legendFormat": "CPU system" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "max": 100 } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Threads JVM",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "jvm_threads_live_threads{application=\"logitrack\"}", "legendFormat": "live" },
+        { "expr": "jvm_threads_daemon_threads{application=\"logitrack\"}", "legendFormat": "daemon" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Activité de l'application (requêtes par endpoint)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "targets": [
+        { "expr": "sum by (uri) (rate(http_server_requests_seconds_count{application=\"logitrack\"}[5m]))", "legendFormat": "{{uri}}" }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": ["logitrack", "monitoring"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "timezone": "browser",
+  "title": "LogiTrack - Dashboard de supervision",
+  "uid": "logitrack-main",
+  "version": 1,
+  "weekStart": ""
+}
